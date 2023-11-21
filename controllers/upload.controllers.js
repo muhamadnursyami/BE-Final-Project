@@ -3,9 +3,6 @@ const Buku = require("../models/buku");
 const cloudinary = require("../utils/cloudinary");
 const upload = require("../utils/multer");
 module.exports = {
-  getAllVideo: async (req, res) => {
-    res.json("hello world");
-  },
   uploadFile: async (req, res) => {
     try {
       // Periksa apakah file/video diunggah
