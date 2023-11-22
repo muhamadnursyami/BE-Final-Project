@@ -1,6 +1,9 @@
 require("dotenv").config();
 var jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const path = require("path");
+const cloudinary = require("../utils/cloudinary");
+const upload = require("../utils/multer");
 const bcrypt = require("bcrypt");
 module.exports = {
   login: async (req, res) => {
@@ -44,11 +47,19 @@ module.exports = {
   },
   register: async (req, res) => {
     try {
-      const { fullName, jenisKelamin, email, password, confirmPassword, role } =
-        req.body;
+      const {
+        namaLengkap,
+        jenisKelamin,
+        email,
+        password,
+        confirmPassword,
+        role,
+        noHp,
+        bio,
+      } = req.body;
 
       if (
-        !fullName ||
+        !namaLengkap ||
         !jenisKelamin ||
         !email ||
         !password ||
@@ -72,12 +83,23 @@ module.exports = {
       }
       const hashPassword = bcrypt.hashSync(password, 10);
 
+      const defaultProfileImage =
+        jenisKelamin === "pria" ? "men.svg" : "women.svg";
+
+      const result = await cloudinary.uploader.upload(
+        path.join(__dirname, "../images", defaultProfileImage),
+        { resource_type: "auto" }
+      );
+
       const dataUsers = await User.create({
-        fullName,
+        namaLengkap,
         jenisKelamin,
         email,
         password: hashPassword,
+        profileImage: result.secure_url,
         role,
+        noHp,
+        bio,
       });
 
       res.status(200).json({
@@ -87,6 +109,32 @@ module.exports = {
     } catch (error) {
       console.log(error);
       res.status(500).send(error.message);
+    }
+  },
+  editProfile: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      // Mengunggah file baru ke Cloudinary
+      const result = await cloudinary.uploader
+        .upload_stream({ resource_type: "auto" }, async (error, result) => {
+          if (error) {
+            console.error(error);
+            res.status(500).json({ error: "Internal Server Error" });
+          } else {
+            // Mengupdate foto profil di MongoDB
+            const updatedUser = await User.findByIdAndUpdate(
+              id,
+              { profileImage: result.secure_url },
+              { new: true }
+            );
+            res.json(updatedUser);
+          }
+        })
+        .end(req.file.buffer);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
 };

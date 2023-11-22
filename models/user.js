@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  fullName: {
+  namaLengkap: {
     type: String,
     required: [true, "Nama lengkap harus diisi"],
   },
@@ -18,6 +18,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     // minlength: [8, "Minimal 8 Karakter"],  tidak dipakai, tetapi handle di controller
     required: [true, "Password harus diisi"],
+  },
+  profileImage: {
+    type: String,
+  },
+  noHp: {
+    type: String,
+  },
+  bio: {
+    type: String,
   },
   role: {
     type: String,
