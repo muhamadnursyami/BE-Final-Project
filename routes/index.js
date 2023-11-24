@@ -9,7 +9,7 @@ route.get("/", (req, res) => {
 });
 
 route.use("/uploads", uploadRoutes);
-route.use("/halaman-videos/videos", videoRoutes);
+route.use("/videos", videoRoutes);
 route.use("/auth", authRoutes);
 route.use("/users", userRoutes);
 module.exports = route;
