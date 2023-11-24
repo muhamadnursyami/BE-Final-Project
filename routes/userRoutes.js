@@ -13,6 +13,7 @@ const upload = require("../utils/multer");
 const { verifyToken, authorizeRoles } = require("../middleware/auth");
 
 route.get("/", verifyToken, authorizeRoles("admin"), getAllUser);
+// route.get("/", getAllUser);
 route.get("/:id", getUserById);
 route.put(
   "/edit-profile/:id/profile-image",
