@@ -16,18 +16,15 @@ module.exports = {
         });
       }
 
-      const cekEmailUser = await User.findOne({ email: email });
-      if (!cekEmailUser) {
+      const result = await User.findOne({ email: email });
+      if (!result) {
         return res.status(400).json({
           message:
             "Akun anda belum terdaftar, silakan buat akun terlebih dahulu",
         });
       }
 
-      const comparePassword = bcrypt.compareSync(
-        password,
-        cekEmailUser.password
-      );
+      const comparePassword = bcrypt.compareSync(password, result.password);
 
       if (!comparePassword) {
         return res.status(401).json({
@@ -39,6 +36,7 @@ module.exports = {
       return res.status(200).json({
         message: "Berhasil Login!",
         token,
+        role: result.role,
       });
     } catch (error) {
       console.log(error);
